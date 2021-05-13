@@ -19,6 +19,20 @@ determinant :: ~determinant() {
     data = nullptr;
 }
 
+determinant::determinant(const determinant& m) :
+    lines(m.lines) {
+    data = new int* [m.lines];
+    for (int i = 0; i < m.lines; ++i) {
+        data[i] = new int[m.lines];
+    }
+
+    for (int i = 0; i < lines; ++i) {
+        for (int j = 0; j < lines; ++j) {
+            data[i][j] = m.data[i][j];
+        }
+    }
+}
+
 
 
 ostream& operator<<(ostream& out, const determinant& m) {
@@ -34,34 +48,31 @@ ostream& operator<<(ostream& out, const determinant& m) {
 }
 
 istream& operator>>(istream& in, const determinant& m) {
+    if (std::cin.fail())throw"input error";
     for (int i = 0; i < m.lines; ++i) {
         for (int j = 0; j < m.lines; ++j) {
             in >> m.data[i][j];
         }
     }
+    
     return in;
 }
 
-int determinant:: determinantCount(const determinant& m, size_t lines) {
-
-    for (int i = 0; i < m.lines - 1; i++) { 
-        for (int g = 0; g < m.lines; g++) {
-            if (g != i) {
-                int temp = -(m.data[g][i] / m.data[i][i]);
-                for (int j = 0; j < m.lines; j++) {
-                    m.data[g][j] = m.data[g][j] + m.data[i][j] * temp;
-                }
-                
-            }
+determinant:: determinant(determinant&&m) :
+    lines(m.lines) {
+    for (int i = 0; i < m.lines; ++i) {
+        for (int j = 0; j < m.lines; ++j) {
+            m.data[i][j] = data[i][j];
         }
     }
-    int det = 1;
-    for (int i = 0; i < m.lines; i++) {
-        det *= m.data[i][i];
+    for (int i = 0; i < m.lines; ++i) {
+        for (int j = 0; j < m.lines; ++j) {
+            m.data[i][j] = NULL;
+        }
     }
-
-    return det;
+    m.lines = 0;
 }
+
 
 void getMatrixWithoutRowAndCol(int** matrix, int size, int row, int col, int** newMatrix ) {
     int offsetRow = 0; 
@@ -88,7 +99,10 @@ void getMatrixWithoutRowAndCol(int** matrix, int size, int row, int col, int** n
          int det = 0;
          int degree = 1; 
          
-     
+         if (m.lines == 0) { 
+             throw "lines must be >0";
+             
+         }
          if (m.lines == 1) {
              cout<< m.data[0][0]<< endl;
          }
@@ -98,11 +112,6 @@ void getMatrixWithoutRowAndCol(int** matrix, int size, int row, int col, int** n
          }
          else {
   
-          /*   int** newMatrix = new int* [m.lines - 1];
-             for (int i = 0; i < m.lines - 1; i++) {
-                 newMatrix[i] = new int[m.lines - 1];
-             }*/
-
              determinant newMatrix(m.lines-1);
 
              for (int j = 0; j < m.lines; j++) {
@@ -112,9 +121,6 @@ void getMatrixWithoutRowAndCol(int** matrix, int size, int row, int col, int** n
                  
                  degree = -degree;
              }
-
-             
-             
          }
 
          return det;

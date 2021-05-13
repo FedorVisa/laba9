@@ -3,6 +3,7 @@
 
 int main()
 {
+	try{
 	size_t lines;
 	
 	std::cout << "enter number of rows" << std::endl;
@@ -12,5 +13,10 @@ int main()
 	std::cin >> A;
 	std::cout << A;
 	std::cout << A.logic(A,lines);
+}
+catch (const char* error) {
+	std::cout << error << std::endl;
+}
+return 0;
 }
 
